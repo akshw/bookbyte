@@ -126,8 +126,63 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-router.get("/user/:id", (req, res) => {});
+//@ts-ignore
+router.get("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
 
-router.put("/user/:id", (req, res) => {});
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+//@ts-ignore
+router.put("/:id", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { name, email } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 export default router;

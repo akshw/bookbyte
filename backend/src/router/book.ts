@@ -50,9 +50,9 @@ router.post("/books", async (req, res) => {
   }
 });
 
-router.get("/reviews?bookId=", async (req, res) => {
-  res.send();
-});
+// router.get("/reviews?bookId=", async (req, res) => {
+//   res.send();
+// });
 
 router.post("/reviews", async (req, res) => {
   res.send();
