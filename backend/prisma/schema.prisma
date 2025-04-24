@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -29,6 +28,8 @@ model Book {
   author String?
   genre String?
   description String?
+  admin Admin @relation(fields: [adminId], references: [id])
+  adminId String
   reviews Review[]
 }
 
@@ -47,4 +48,5 @@ model Admin{
   email String
   password String
   name String
+  books Book[]
 }
