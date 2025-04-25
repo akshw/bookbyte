@@ -33,8 +33,9 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JWT_SECRET = exports.PORT = void 0;
+exports.GEMINI_API_KEY = exports.JWT_SECRET = exports.PORT = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
 exports.PORT = process.env.PORT;
 exports.JWT_SECRET = process.env.JWT_SECRET;
+exports.GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";

@@ -17,7 +17,3 @@ app.use("/api", rootroutes);
 app.listen(port, () => {
   console.log("Server is running at 3000 ");
 });
-
-console.log(port);
-
-console.log("hii");

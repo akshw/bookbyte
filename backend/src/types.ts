@@ -1,4 +1,11 @@
 import { z } from "zod";
+import { Request } from "express";
+
+export interface AuthRequest extends Request {
+  user?: {
+    id: string;
+  };
+}
 
 export const SignupBody = z.object({
   email: z.string().email({ message: "Invalid email format" }),

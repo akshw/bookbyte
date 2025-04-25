@@ -8,5 +8,5 @@ const user_1 = __importDefault(require("./user"));
 const book_1 = __importDefault(require("./book"));
 const router = express_1.default.Router();
 router.use("/user", user_1.default);
-router.use("/book", book_1.default);
+router.use("/lib", book_1.default);
 exports.default = router;

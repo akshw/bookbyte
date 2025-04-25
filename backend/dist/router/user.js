@@ -57,8 +57,9 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
         return res.status(201).json({
             message: "User created successfully",
-            token,
+            userToken: token,
             user: {
+                id: newUser.id,
                 email: newUser.email,
                 name: newUser.name,
             },
@@ -107,8 +108,9 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
         return res.status(200).json({
             message: "Signin successful",
-            token,
+            userToken: token,
             user: {
+                id: user.id,
                 email: user.email,
                 name: user.name,
             },
@@ -122,7 +124,7 @@ router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 //@ts-ignore
-router.get("/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/:id", middleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.params.id;
         if (!userId) {
@@ -171,6 +173,94 @@ router.put("/:id", middleware_1.default, (req, res) => __awaiter(void 0, void 0,
     catch (error) {
         console.error("Error updating user:", error);
         return res.status(500).json({ message: "Internal server error" });
+    }
+}));
+//@ts-ignore
+router.post("/admin/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { email, password, name } = req.body;
+        if (!email || !password || !name) {
+            return res
+                .status(400)
+                .json({ message: "Email, password, and name are required" });
+        }
+        const existingAdmin = yield prisma.admin.findFirst({
+            where: { email: email },
+        });
+        if (existingAdmin) {
+            return res
+                .status(400)
+                .json({ message: "Admin with this email already exists" });
+        }
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+        const newAdmin = yield prisma.admin.create({
+            data: {
+                email,
+                password: hashedPassword,
+                name,
+            },
+        });
+        const token = jsonwebtoken_1.default.sign({ userId: newAdmin.id }, config_1.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+        return res.status(201).json({
+            message: "Admin created successfully",
+            adminToken: token,
+            user: {
+                id: newAdmin.id,
+                email: newAdmin.email,
+                name: newAdmin.name,
+            },
+        });
+    }
+    catch (error) {
+        console.error("Error creating admin:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}));
+//@ts-ignore
+router.post("/admin/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const validatedData = types_1.SigninBody.safeParse(req.body);
+        if (!validatedData.success) {
+            return res.status(400).json({
+                message: "Invalid input data",
+                errors: validatedData.error.errors,
+            });
+        }
+        const { email, password } = validatedData.data;
+        const admin = yield prisma.admin.findFirst({
+            where: { email },
+        });
+        if (!admin) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
+        const isValidPassword = yield bcrypt_1.default.compare(password, admin.password);
+        if (!isValidPassword) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
+        const token = jsonwebtoken_1.default.sign({ userId: admin.id }, config_1.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+        return res.status(200).json({
+            message: "Admin signin successful",
+            adminToken: token,
+            user: {
+                id: admin.id,
+                email: admin.email,
+                name: admin.name,
+            },
+        });
+    }
+    catch (error) {
+        console.error("Admin signin error:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+        });
     }
 }));
 exports.default = router;
