@@ -202,7 +202,6 @@ router.post("/reviews", middleware_1.default, (req, res) => __awaiter(void 0, vo
         const { reviewText, rating, bookId } = req.body;
         // @ts-ignore
         const userId = (_a = req.userId) === null || _a === void 0 ? void 0 : _a.userId;
-        console.log(userId);
         if (!userId || !bookId) {
             return res.status(400).json({
                 success: false,

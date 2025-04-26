@@ -1,8 +1,15 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./components/Home";
+import Books from "./components/Books";
+
 function App() {
   return (
-    <div>
-      <div className="text-amber-300 underline">Hello</div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/books" element={<Books />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
